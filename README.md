@@ -1,4 +1,4 @@
-# Installation d'un PKI sous smallstep-ca
+# Installation d'une PKI sous smallstep-ca
 
 Installation de smallstep cli sous Debian
 
