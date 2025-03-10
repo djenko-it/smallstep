@@ -1,0 +1,37 @@
+version: '3.8'
+
+secrets:
+  ca_password:
+    file: ./secrets/ca_password.txt
+
+services:
+  smallstep-ca:
+    image: smallstep/step-ca:latest
+    container_name: smallstep-ca
+    restart: unless-stopped
+    volumes:
+      - step-ca-data:/home/step
+    ports:
+      - "9000:9000"  # Port standard pour step-ca
+      - "443:9000"   # Pour l'accès HTTPS
+    environment:
+      - DOCKER_STEPCA_INIT_NAME=Smallstep CA
+      - DOCKER_STEPCA_INIT_DNS_NAMES=localhost,step-ca,djenkoit.fr,*.djenkoit.fr
+      - DOCKER_STEPCA_INIT_PROVISIONER_NAME=admin
+      - DOCKER_STEPCA_INIT_ADMIN_SUBJECT=admin@djenkoit.fr
+      - DOCKER_STEPCA_INIT_ACME=true
+      - DOCKER_STEPCA_INIT_DEPLOYMENT_TYPE=standalone
+      - DOCKER_STEPCA_INIT_SSH=true
+      - DOCKER_STEPCA_INIT_PASSWORD_FILE=/run/secrets/ca_password
+    secrets:
+      - ca_password
+    networks:
+      - step-ca-network
+
+volumes:
+  step-ca-data:
+    driver: local
+
+networks:
+  step-ca-network:
+    driver: bridge
